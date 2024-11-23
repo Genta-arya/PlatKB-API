@@ -1,0 +1,170 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model users {
+  id         Int     @id @default(autoincrement())
+  first_name String
+  last_name  String
+  email      String  @unique
+  gender     String
+  ip_address String
+  password   String? // Adding the password field with the possibility of being null
+}
+
+model Barcode {
+  id         Int    @id @default(autoincrement())
+  barcode    String @unique
+  barcodeUrl String
+  barang     Barang @relation(fields: [barangId], references: [id])
+  barangId   Int
+}
+
+model Transaksi {
+  id               Int               @id @default(autoincrement())
+  nama             String
+  alamat           String
+  motor            String
+  noHp             String?
+  nopol            String
+  detail           String            @db.Text
+  total            Float
+  totalService     Float?
+  tanggal          DateTime          @default(now())
+  transaksiBarangs TransaksiBarang[]
+  mekanik          Mekanik?          @relation(fields: [mekanikId], references: [id])
+  mekanikId        Int?
+}
+
+model TransaksiBarang {
+  id           Int         @id @default(autoincrement())
+  transaksi    Transaksi   @relation(fields: [transaksiId], references: [id])
+  transaksiId  Int
+  barang       Barang      @relation(fields: [barangId], references: [id])
+  barangId     Int
+  jumlah       Int
+  pendapatan   Pendapatan? @relation(fields: [pendapatanId], references: [id]) // Menambahkan relasi dengan Pendapatan
+  pendapatanId Int?
+}
+
+model Pendapatan {
+  id               Int               @id @default(autoincrement())
+  modalAwal        Int               @default(0)
+  keuntungan       Int               @default(0)
+  totalPendapatan  Int               @default(0)
+  tanggal          DateTime
+  transaksiBarangs TransaksiBarang[] // Menambahkan relasi dengan TransaksiBarang
+}
+
+model PendapatanHarian {
+  id Int @id @default(autoincrement())
+
+  keuntungan      Int      @default(0)
+  totalPendapatan Int      @default(0)
+  modalAwal       Int      @default(0)
+  totalKeuntungan Int      @default(0)
+  tanggal         DateTime
+  tanggal_akhir   DateTime
+}
+
+model Peminjamans {
+  id   Int    @id @default(autoincrement())
+  nama String
+
+  ket     String   @db.Text
+  nominal Int      @default(0)
+  tanggal DateTime @default(now())
+}
+
+model SadoKas {
+  id            Int      @id @default(autoincrement())
+  nominal       Int      @default(0)
+  tanggal       DateTime @default(now())
+  tanggal_akhir DateTime
+}
+
+model Earning {
+  id            Int      @id @default(autoincrement())
+  uang_keluar   Int      @default(0)
+  uang_masuk    Int      @default(0)
+  tanggal       DateTime @default(now())
+  tanggal_akhir DateTime
+}
+
+model Barang {
+  id         Int               @id @default(autoincrement())
+  nama       String            @unique
+  kode       String? // Jika ada kode unik untuk barang, bisa ditambahkan
+  harga      Float
+  diskon     Decimal?
+  service    Int               @default(0)
+  modal      Int
+  laku       Int?              @default(0)
+  stok       Int
+  barcodes   Barcode[]
+  transaksis TransaksiBarang[]
+  histories  History[]
+}
+
+model HistoryBarang {
+  id        Int      @id @default(autoincrement())
+  barangId  Int
+  tipe      String
+  waktu     DateTime @default(now())
+  perubahan String
+  nama      String
+}
+
+model Mekanik {
+  id         Int           @id @default(autoincrement())
+  nama       String        @unique
+  noHp       String?       @db.Text
+  transaksis Transaksi[]
+  gajis      GajiMekanik[]
+}
+
+model GajiMekanik {
+  id            Int      @id @default(autoincrement())
+  jumlah        Int
+  tanggal       DateTime // Tanggal pembayaran gaji
+  tanggal_akhir DateTime
+  mekanik       Mekanik  @relation(fields: [mekanikId], references: [id])
+  mekanikId     Int // Field foreign key yang merujuk ke Mekanik
+}
+
+model History {
+  id        Int      @id @default(autoincrement())
+  barangId  Int
+  barang    Barang   @relation(fields: [barangId], references: [id])
+  nama      String
+  qty       Int
+  createdAt DateTime @default(now())
+}
+
+model qrcht {
+  id  Int    @id @default(autoincrement())
+  url String
+}
+
+model auth {
+  uid       Int     @id @default(autoincrement())
+  username  String  @unique @db.VarChar(255)
+  email     String  @unique @db.VarChar(255)
+  password  String  @db.VarChar(255)
+  role      String? @db.VarChar(255)
+  name      String? @db.VarChar(255)
+  token_jwt String? @unique @db.VarChar(255)
+  otp       String?
+}
+
+
