@@ -1,7 +1,7 @@
 import twilio from 'twilio';
 
-const accountSid = 'AC4f8e39a226ecfcfe3a444f8d3517785e';
-const authToken = '8cade51c4ad9db46e1cdb4e21f4a9022';
+const accountSid = '';
+const authToken = '';
 const client = twilio(accountSid, authToken);
 
 const sendMessage = async (req, res) => {
