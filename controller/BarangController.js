@@ -43,20 +43,20 @@ export const createBarang = async (req, res) => {
   try {
     const qrCodeData = `BRG-${uuidv4()}`;
 
-    const qrCodeBuffer = await generateQRCode(qrCodeData);
+    // const qrCodeBuffer = await generateQRCode(qrCodeData);
 
-    if (!qrCodeBuffer) {
-      return res.status(500).json({ error: "Error generating QR code." });
-    }
+    // if (!qrCodeBuffer) {
+    //   return res.status(500).json({ error: "Error generating QR code." });
+    // }
 
-    const qrCodeFileName = `${qrCodeData}.png`;
-    const qrCodeFilePath = `QR/${qrCodeFileName}`;
-    const qrCodeFile = bucket.file(qrCodeFilePath);
-    await qrCodeFile.save(qrCodeBuffer, {
-      metadata: {
-        contentType: "image/png",
-      },
-    });
+    // const qrCodeFileName = `${qrCodeData}.png`;
+    // const qrCodeFilePath = `QR/${qrCodeFileName}`;
+    // const qrCodeFile = bucket.file(qrCodeFilePath);
+    // await qrCodeFile.save(qrCodeBuffer, {
+    //   metadata: {
+    //     contentType: "image/png",
+    //   },
+    // });
 
     const existingProduct = await prisma.barang.findFirst({
       where: {
@@ -215,9 +215,7 @@ export const createBarang = async (req, res) => {
       data: {
         barcode: qrCodeData,
         barangId: newBarang.id,
-        barcodeUrl: `https://firebasestorage.googleapis.com/v0/b/${
-          bucket.name
-        }/o/${encodeURIComponent(qrCodeFilePath)}?alt=media`,
+        barcodeUrl: `-`,
       },
     });
 
