@@ -15,8 +15,10 @@ export const PinjamDana = async (req, res) => {
       timeZone: "Asia/Jakarta",
     });
     const dateObj = new Date(isoToday);
+ today.setHours(today.getHours() - 7);
 
-    const isoString = dateObj.toISOString();
+    // Ubah tanggal ke format ISO (UTC)
+    const isoString = today.toISOString();
     const startOfMonth = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
 
     const pendapatan = await prisma.sadoKas.findMany({
