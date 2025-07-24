@@ -4,17 +4,17 @@ const prisma = new PrismaClient();
 
 export const getGajiTeknisi = async (req, res) => {
   try {
-    const allGaji = await prisma.gajiMekanik.findMany({
+  const allGaji = await prisma.gajiMekanik.findMany({
   where: {
-    mekanik: {
-      // hanya ambil jika relasi mekanik-nya ada
-      isNot: null,
+    mekanikId: {
+      not: null,
     },
   },
   include: {
     mekanik: true,
   },
 });
+
 
 
     if (!allGaji || allGaji.length === 0) {
